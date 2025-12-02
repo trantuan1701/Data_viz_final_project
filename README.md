@@ -1,67 +1,19 @@
-# Rossmann Store Sales — Sức mạnh của Data Preparation qua Data Storytelling
+# Sức mạnh của Data Preparation qua Data Storytelling  
+### Case study: Rossmann Store Sales
 
-Dự án này là bài **Project cuối kỳ** cho môn Machine Learning.  
-Mục tiêu chính:
+## Giới thiệu
 
-- Khai thác bộ dữ liệu **Rossmann Store Sales** (train.csv + store.csv).
-- Thể hiện **vai trò quan trọng của Data Preparation** (làm sạch, biến đổi, feature engineering…) thông qua:
-  - **Câu chuyện dữ liệu (Data Storytelling)**: trực quan hóa, so sánh, diễn giải.
-  - **Mô hình ML đơn giản**: so sánh kết quả khi dùng dữ liệu *thô* vs *đã chuẩn bị*.
+Hãy tưởng tượng bạn là Data Scientist của chuỗi cửa hàng **Rossmann**. Trước mặt bạn là bộ dữ liệu hơn **1 triệu bản ghi** dạng **time series**, ghi lại doanh thu theo từng ngày và thông tin chi tiết của **1.115 cửa hàng** (loại cửa hàng, khuyến mãi, ngày nghỉ lễ, cạnh tranh, v.v.). Nhiệm vụ: 
 
-> Giai đoạn đầu, **nhóm chỉ tập trung làm việc trên các file notebook (thử nghiệm, EDA, vẽ biểu đồ)**.  
-> Khi đã ổn, **mới refactor notebook thành các module Python trong `src/`**.
+> Dự đoán **Doanh thu (Sales)** của một cửa hàng vào một ngày bất kỳ, dựa trên thông tin thời gian và đặc trưng cửa hàng.
 
----
+**Vấn đề chính**: phần lớn đặc trưng là **biến rời rạc/phân loại**, vốn không “thân thiện” với mô hình như các biến liên tục. Trên nền đó, dữ liệu còn có **missing values** và cấu trúc phức tạp: nhiều mã hoá khó hiểu, nhiều trường “Since/Duration”, cùng sự đa dạng của 1.115 cửa hàng cần được “giải mã” trước khi đưa vào mô hình.
 
-## 1. Bộ dữ liệu sử dụng
+Dự án này được thiết kế để cho thấy **Data Preparation có thể thay đổi kết quả bài toán như thế nào** thông qua bốn bước chính:
 
-Trong repo này, chúng ta chỉ dùng:
+- **EDA / Data Understanding**: Khám phá bức tranh tổng thể, hiểu rõ cấu trúc và bối cảnh dữ liệu Rossmann.  
+- **Deep Analysis**: Đi sâu vào các nhóm biến quan trọng (thời gian, mùa vụ, cạnh tranh, promotion, loại cửa hàng) để hiểu rõ hơn hành vi doanh thu.  
+- **Chuẩn bị dữ liệu (Data Preparation)**: Làm sạch, xử lý missing values, biến đổi và thiết kế lại đặc trưng – đặc biệt cho các biến phân loại và chuỗi thời gian.  
+- **Đánh giá mô hình (RAW vs CLEAN)**: So sánh mô hình trên dữ liệu thô và dữ liệu đã chuẩn bị kỹ lưỡng.
 
-- `data/raw/train.csv`  
-- `data/raw/store.csv`
-
-Hai file này là dữ liệu gốc từ Kaggle (không chỉnh sửa thủ công).
-
----
-
-## 2. Cấu trúc thư mục (dự kiến)
-
-```text
-rossmann-data-prep-storytelling/
-├── README.md
-├── .gitignore
-├── requirements.txt           # (sẽ bổ sung sau)
-│
-├── data/
-│   ├── raw/                   # Dữ liệu gốc (train.csv, store.csv)
-│   ├── interim/               # Dữ liệu trung gian (sau một số bước xử lý)
-│   └── processed/             # Dữ liệu cuối cùng để train/evaluate
-│
-├── notebooks/
-│   ├── 01_eda_raw_data.ipynb              # EDA dữ liệu thô
-│   ├── 02_data_cleaning_preparation.ipynb # Làm sạch & chuẩn bị dữ liệu
-│   ├── 03_feature_engineering.ipynb       # Tạo đặc trưng mới
-│   ├── 04_model_raw_vs_clean.ipynb        # So sánh model raw vs clean
-│   └── sandbox_<tên_thành_viên>.ipynb     # Notebook thử nghiệm cá nhân
-│
-├── src/                        # (Giai đoạn 1 hầu như để trống / rất ít code)
-│   ├── __init__.py
-│   ├── data/                   # load_data, preprocess (sẽ tách từ notebook)
-│   ├── features/               # build_features (sẽ tách từ notebook)
-│   ├── models/                 # train, evaluate (sẽ tách từ notebook)
-│   └── visualization/          # hàm vẽ biểu đồ dùng lại
-│
-├── scripts/                    # (dùng ở giai đoạn 2, sau khi đã có module)
-│   ├── run_prepare_data.py
-│   ├── run_train_baseline.py
-│   └── run_evaluate.py
-│
-├── reports/
-│   ├── figures/                # Lưu hình vẽ dùng cho slide/báo cáo
-│   ├── slides/                 # File slide thuyết trình
-│   └── final_report/           # PDF gộp Storytelling + Phân tích kỹ thuật
-│
-└── docs/
-    ├── data_dictionary.md      # Mô tả chi tiết các biến (train.csv, store.csv)
-    ├── project_overview.md     # Ghi chú flow chung của project
-    └── storytelling_design.md  # Ý tưởng lựa chọn biểu đồ & chiến lược kể chuyện
+Phần mở đầu này đặt nền cho các phần tiếp theo trong project: từ một bộ dữ liệu phức tạp, nhiều biến phân loại khó xử lý, chúng ta sẽ từng bước **hiểu – chuẩn hóa – tối ưu dữ liệu**, tạo cơ sở vững chắc cho Data Storytelling và phân tích kỹ thuật ở các phần sau.
