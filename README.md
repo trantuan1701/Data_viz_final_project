@@ -1,12 +1,12 @@
 # Rossmann Store Sales – Sức mạnh của Data Preparation qua Data Storytelling
 
-> **Môn học:** Data Storytelling & Data Preparation
-> **Mục tiêu:** Dùng bộ dữ liệu Rossmann Store Sales (Kaggle) để chứng minh vai trò của
+![So sánh RMSPE 3 mức độ Data Preparation](figures/rmspe_dataprep.png)
+
+*Hình 1 – Cùng một mô hình XGBoost, RMSPE giảm từ **0.1669** (Raw Data) xuống **0.1439** (Business Logic Features) và còn **0.1160** khi dùng Entity Embeddings.*
+
+> **Môn học:** Data Storytelling & Data Preparation  
+> **Mục tiêu:** Dùng bộ dữ liệu Rossmann Store Sales (Kaggle) để chứng minh vai trò của  
 > **Data Preparation** trong việc xây dựng mô hình dự báo doanh thu cho chuỗi bán lẻ.
-
-Repository này chứa toàn bộ mã nguồn, notebook phân tích, tài liệu và báo cáo dùng cho
-**Phần 3 – Code Project trên GitHub** của bài tập nhóm.
-
 ---
 
 ## 1. Bối cảnh & Mục tiêu
