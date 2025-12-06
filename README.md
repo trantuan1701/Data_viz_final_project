@@ -90,6 +90,10 @@ Trong project này, chúng mình chủ yếu sử dụng `train.csv` và `store.
 │       # - Train XGBoost với tham số cố định
 │       # - So sánh RMSPE, vẽ Actual vs Predicted, phân tích không gian embedding
 │
+|
+├─ figures/            # Hình minh họa chính (biểu đồ đưa vào slide/README)
+|
+|
 ├─ reports/
 │  └─ tmp/
 │     ├─ Dataprep_comparation.ipynb
