@@ -1,19 +1,173 @@
-# Sức mạnh của Data Preparation qua Data Storytelling  
-### Case study: Rossmann Store Sales
+# Rossmann Store Sales – Sức mạnh của Data Preparation qua Data Storytelling
 
-## Giới thiệu
+> **Môn học:** Data Storytelling & Data Preparation
+> **Mục tiêu:** Dùng bộ dữ liệu Rossmann Store Sales (Kaggle) để chứng minh vai trò của
+> **Data Preparation** trong việc xây dựng mô hình dự báo doanh thu cho chuỗi bán lẻ.
 
-Hãy tưởng tượng bạn là Data Scientist của chuỗi cửa hàng **Rossmann**. Trước mặt bạn là bộ dữ liệu hơn **1 triệu bản ghi** dạng **time series**, ghi lại doanh thu theo từng ngày và thông tin chi tiết của **1.115 cửa hàng** (loại cửa hàng, khuyến mãi, ngày nghỉ lễ, cạnh tranh, v.v.). Nhiệm vụ: 
+Repository này chứa toàn bộ mã nguồn, notebook phân tích, tài liệu và báo cáo dùng cho
+**Phần 3 – Code Project trên GitHub** của bài tập nhóm.
 
-> Dự đoán **Doanh thu (Sales)** của một cửa hàng vào một ngày bất kỳ, dựa trên thông tin thời gian và đặc trưng cửa hàng.
+---
 
-**Vấn đề chính**: phần lớn đặc trưng là **biến rời rạc/phân loại**, vốn không “thân thiện” với mô hình như các biến liên tục. Trên nền đó, dữ liệu còn có **missing values** và cấu trúc phức tạp: nhiều mã hoá khó hiểu, nhiều trường “Since/Duration”, cùng sự đa dạng của 1.115 cửa hàng cần được “giải mã” trước khi đưa vào mô hình.
+## 1. Bối cảnh & Mục tiêu
 
-Dự án này được thiết kế để cho thấy **Data Preparation có thể thay đổi kết quả bài toán như thế nào** thông qua bốn bước chính:
+Rossmann là một chuỗi bán lẻ dược phẩm với hơn 1.000 cửa hàng tại châu Âu.
+Bài toán đặt ra:
 
-- **EDA / Data Understanding**: Khám phá bức tranh tổng thể, hiểu rõ cấu trúc và bối cảnh dữ liệu Rossmann.  
-- **Deep Analysis**: Đi sâu vào các nhóm biến quan trọng (thời gian, mùa vụ, cạnh tranh, promotion, loại cửa hàng) để hiểu rõ hơn hành vi doanh thu.  
-- **Chuẩn bị dữ liệu (Data Preparation)**: Làm sạch, xử lý missing values, biến đổi và thiết kế lại đặc trưng – đặc biệt cho các biến phân loại và chuỗi thời gian.  
-- **Đánh giá mô hình (RAW vs CLEAN)**: So sánh mô hình trên dữ liệu thô và dữ liệu đã chuẩn bị kỹ lưỡng.
+> Dự báo **doanh thu theo ngày của từng cửa hàng** dựa trên lịch sử bán hàng,
+> thông tin ngày tháng, chương trình khuyến mãi, cạnh tranh, v.v.
 
-Phần mở đầu này đặt nền cho các phần tiếp theo trong project: từ một bộ dữ liệu phức tạp, nhiều biến phân loại khó xử lý, chúng ta sẽ từng bước **hiểu – chuẩn hóa – tối ưu dữ liệu**, tạo cơ sở vững chắc cho Data Storytelling và phân tích kỹ thuật ở các phần sau.
+Trong project này, chúng mình:
+
+1. **Khảo sát & kể chuyện với dữ liệu** (EDA, seasonality, cạnh tranh, promo).
+2. **Xây các pipeline chuẩn bị dữ liệu**:
+
+   * RAW (Naive),
+   * Business Logic Features (CLEAN),
+   * Entity Embeddings cho các biến phân loại.
+3. **So sánh chất lượng mô hình** (RMSPE) giữa các pipeline, và
+4. **Trình bày kết quả dưới dạng Data Storytelling**, tập trung vào việc:
+
+   > *Cùng một mô hình, cùng một bài toán – nhưng cách chuẩn bị dữ liệu khác nhau
+   > có thể tạo ra chất lượng dự báo hoàn toàn khác nhau.*
+
+---
+
+## 2. Bộ dữ liệu
+
+Nguồn dữ liệu: **Rossmann Store Sales** trên Kaggle
+([https://www.kaggle.com/c/rossmann-store-sales](https://www.kaggle.com/c/rossmann-store-sales))
+
+Các file chính:
+
+* `data/train.csv` – Dữ liệu train lịch sử: doanh thu, số khách, trạng thái mở cửa, promo, v.v.
+* `data/test.csv` – Dữ liệu test dùng cho submission Kaggle (không có cột `Sales`).
+* `data/store.csv` – Thông tin tĩnh về từng cửa hàng (StoreType, Assortment, cạnh tranh, Promo2…).
+* `data/sample_submission.csv` – File submission mẫu của Kaggle.
+
+Trong project này, chúng mình chủ yếu sử dụng `train.csv` và `store.csv` để:
+
+* Khảo sát dữ liệu,
+* Xây các pipeline Feature Engineering,
+* Và huấn luyện / so sánh mô hình.
+
+---
+
+## 3. Cấu trúc repository
+
+```text
+.
+├─ data/                     # Dữ liệu thô từ Kaggle
+│  ├─ sample_submission.csv
+│  ├─ store.csv
+│  ├─ test.csv
+│  └─ train.csv
+│
+├─ data_preparation/         # Code Python phục vụ chuẩn bị dữ liệu & mô hình
+│  ├─ __init__.py
+│  ├─ processors.py          # Các class FeatureGenerator (RAW, CLEAN, EntityEmbedding, ...)
+│  ├─ evaluator.py           # RossmannComparer: train/eval XGBoost, plot learning curve, lưu prediction
+│  ├─ models.py              # Định nghĩa EntityEmbeddingModel và các model PyTorch liên quan
+│  └─ checkpoints/           # Nơi lưu checkpoint .pth cho Entity Embeddings
+│
+├─ docs/                     # Tài liệu mô tả dự án (Markdown)
+│  ├─ data_dictionary.md     # Miêu tả ý nghĩa các cột trong train/store
+│  ├─ project_overview.md    # Mô tả ngắn gọn bài toán, phạm vi, giả định
+│  └─ storytelling_design.md # Outline, flow và key message cho phần Data Storytelling (slide/PDF)
+│
+├─ notebooks/                # Jupyter notebooks theo từng "chương" phân tích
+│  ├─ 01.Understand_EDA.ipynb
+│  │    # Chương 1 – Khám phá dữ liệu: phân phối Sales, khách, holiday, open/close, ...
+│  ├─ 02.Sales_seasonality_analysis.ipynb
+│  │    # Phân tích mùa vụ: theo ngày trong tuần, tháng, năm, holiday vs non-holiday
+│  ├─ 03.competitor analysis.ipynb
+│  │    # Phân tích cạnh tranh: CompetitionDistance, thời điểm đối thủ xuất hiện, ...
+│  ├─ 04.PROMO_.ipynb
+│  │    # Phân tích Promo & Promo2: hành vi khi có/không có khuyến mãi, hiệu ứng theo thời gian
+│  └─ 05.Data_Preparation.ipynb
+│       # Notebook chính cho Chương 2:
+│       # - Định nghĩa pipeline RAW / Business Logic Features / Entity Embeddings
+│       # - Train XGBoost với tham số cố định
+│       # - So sánh RMSPE, vẽ Actual vs Predicted, phân tích không gian embedding
+│
+├─ reports/
+│  └─ tmp/
+│     ├─ Dataprep_comparation.ipynb
+│     │    # Notebook thử nghiệm cho phần so sánh pipeline & phân tích embedding (bản nháp)
+│     └─ Model_comparation.ipynb
+│          # Notebook thử nghiệm cho phần vẽ biểu đồ RMSPE/learning curve (bản nháp)
+│
+├─ .gitignore                # Bỏ qua các file không cần track (checkpoints, output tạm, v.v.)
+├─ README.md                 # File mô tả dự án (chính là file bạn đang đọc)
+└─ requirements.txt          # Danh sách thư viện Python cần thiết
+```
+
+---
+
+## 4. Cách cài đặt & chạy project
+
+### 4.1. Yêu cầu môi trường
+
+* Python 3.9+ (khuyến nghị dùng Conda)
+* Một environment mới, ví dụ `dataviz` hoặc `rossmann`
+* Có thể dùng GPU nếu muốn train nhanh hơn cho phần Entity Embeddings (PyTorch)
+
+### 4.2. Tạo environment & cài đặt thư viện
+
+```bash
+# Tạo env mới (ví dụ dùng conda)
+conda create -n dataviz python=3.10
+conda activate dataviz
+
+# Cài đặt các thư viện cần thiết
+pip install -r requirements.txt
+```
+
+> Nếu dùng GPU, hãy cài PyTorch bản tương ứng với CUDA theo hướng dẫn từ trang chủ PyTorch,
+> rồi mới chạy `pip install -r requirements.txt`.
+
+### 4.3. Chuẩn bị dữ liệu
+
+1. Tải bộ data **Rossmann Store Sales** từ Kaggle.
+2. Đặt các file `train.csv`, `test.csv`, `store.csv`, `sample_submission.csv` vào thư mục `data/`.
+3. Không cần đổi tên cột hay chỉnh sửa dữ liệu gốc.
+
+### 4.4. Chạy các notebook
+
+Thứ tự khuyến nghị:
+
+1. `01.Understand_EDA.ipynb`
+   → Khám phá phân phối Sales, Customers, Open/Close, holiday, các vấn đề missing/outlier.
+
+2. `02.Sales_seasonality_analysis.ipynb`
+   → Hiểu pattern theo ngày trong tuần, tháng, năm, holiday vs non-holiday.
+
+3. `03.competitor analysis.ipynb`
+   → Phân tích cạnh tranh: CompetitionDistance, thời điểm đối thủ xuất hiện, tác động lên doanh thu.
+
+4. `04.PROMO_.ipynb`
+   → Phân tích hành vi doanh thu khi có/không có Promo, Promo2.
+
+5. `05.Data_Preparation.ipynb`
+   → Notebook trọng tâm của Chương 2:
+
+   * Xây 3 pipeline: **RAW**, **Business Logic Features**, **Entity Embeddings**.
+   * Train XGBoost với cùng bộ tham số cố định.
+   * So sánh RMSPE, vẽ learning curves.
+   * Vẽ Actual vs Predicted theo từng cửa hàng.
+   * Phân tích không gian embedding (PCA, phân phối PC, khoảng cách embedding vs khoảng cách doanh thu).
+
+Trong quá trình chạy notebook, các module trong `data_preparation/` được import như một package nội bộ của project.
+
+---
+
+## 5. Hướng phát triển tiếp theo
+
+Một số hướng mở rộng nếu có thêm thời gian:
+
+* Thử thêm các mô hình khác (LightGBM, CatBoost) trên cùng pipeline Entity Embeddings.
+* Tối ưu hyperparameter bằng cross-validation.
+* Kết hợp nhiều model (ensemble) để cải thiện thêm RMSPE.
+* Đóng gói pipeline thành script/CLI hoặc web API nhỏ để dự báo doanh thu cho từng cửa hàng trong ngày mới.
+
+---
