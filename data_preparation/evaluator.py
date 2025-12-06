@@ -4,8 +4,7 @@ import xgboost as xgb
 import matplotlib.pyplot as plt
 
 # =========================
-#  CONSTANTS (MÀU SẮC)
-# =========================
+# CONSTANTS
 ROSSMANN_RED = "#C3002D"
 GRAY_NEUTRAL = "#888888"
 GRAY_LIGHT   = "#C3C3C3"
@@ -163,7 +162,7 @@ class RossmannComparer:
         # 4. Train XGBoost
         print(f"Training XGBoost (log target = {use_log_target})...")
         params = self.model_params.copy()
-        params["disable_default_eval_metric"] = 1  # tắt metric mặc định
+        params["disable_default_eval_metric"] = 1 
 
         model = xgb.XGBRegressor(
             **params,

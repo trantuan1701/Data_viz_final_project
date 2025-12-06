@@ -9,7 +9,10 @@ from torch.utils.data import DataLoader, TensorDataset
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
-from models import EntityEmbeddingModel
+from .models import EntityEmbeddingModel
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
 
 
 class BaseRossmannTransformer(BaseEstimator, TransformerMixin):
@@ -272,15 +275,18 @@ class OptimizedFeatureGenerator(BaseRossmannTransformer):
 
         return df
 
-
 class EntityEmbeddingFeatureGenerator(BaseRossmannTransformer):
     def __init__(
         self,
-        model_save_path: str = "checkpoints/emb_model_compare.pth",
+        model_save_path: str | Path = "checkpoints/emb_model_compare.pth",
         epochs: int = 5,
         batch_size: int = 512,
     ):
-        self.model_save_path = model_save_path
+        path = Path(model_save_path)
+        if not path.is_absolute():
+            path = (BASE_DIR / path).resolve()
+        self.model_save_path = path
+
         self.epochs = epochs
         self.batch_size = batch_size
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -355,10 +361,9 @@ class EntityEmbeddingFeatureGenerator(BaseRossmannTransformer):
                 optimizer.step()
                 running_loss += loss.item() * cats.size(0)
 
-        ckpt_dir = os.path.dirname(self.model_save_path)
-        if ckpt_dir and not os.path.exists(ckpt_dir):
-            os.makedirs(ckpt_dir)
-        torch.save(model.state_dict(), self.model_save_path)
+        ckpt_dir = self.model_save_path.parent
+        ckpt_dir.mkdir(parents=True, exist_ok=True)
+        torch.save(model.state_dict(), str(self.model_save_path))
 
     def fit(self, X, y=None):
         df = self._base_fe(X)
@@ -536,12 +541,12 @@ class EntityEmbeddingFeatureGenerator(BaseRossmannTransformer):
 
         model = EntityEmbeddingModel(self.emb_dims, n_cont=len(self.cont_cols))
         try:
-            model.load_state_dict(
-                torch.load(self.model_save_path, map_location=self.device)
-            )
+            state_dict = torch.load(str(self.model_save_path), map_location=self.device)
+            model.load_state_dict(state_dict)
+            # =========================================
         except FileNotFoundError:
             raise FileNotFoundError(
-                f"Missing model file: {self.model_save_path}. Please run .fit() first!"
+                f"Chưa có file model: {self.model_save_path}. Chạy .fit() trước!!!!"
             )
 
         model.eval()
