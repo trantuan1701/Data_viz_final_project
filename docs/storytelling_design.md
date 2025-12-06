@@ -1,22 +1,30 @@
 # Storytelling Design – Rossmann Data Story
 
 Tài liệu này mô tả cách nhóm thiết kế câu chuyện dữ liệu cho Rossmann Store Sales,
-dựa trên các nguyên tắc trong *Storytelling with Data* và được hiện thực hóa
-trong slide deck `[GROUP 5] Rossmann.pdf`.
+dựa trên các nguyên tắc trong *Storytelling with Data*.
 
 ---
 
 ## 1. Ngữ cảnh (Context) & Big Idea
-
 ### 1.1. Đối tượng (Who)
 
-- **Ban lãnh đạo chuỗi cửa hàng** Rossmann.
-- **Đội ngũ vận hành & điều hành hệ thống** (operations, marketing, cửa hàng trưởng).
+Nhóm xác định **hai lớp khán giả chính**:
 
-Họ bận rộn và quan tâm chủ yếu đến:
+1. **Nhóm business / ra quyết định**
+   - Ban lãnh đạo chuỗi cửa hàng Rossmann.
+   - Đội ngũ vận hành & điều hành hệ thống (operations, marketing, cửa hàng trưởng).
+   - Quan tâm chủ yếu tới: doanh thu, rủi ro mất doanh thu, khuyến nghị hành động cụ thể.
 
-- Doanh thu, biên lợi nhuận, rủi ro mất doanh thu.
-- Những quyết định thực tế: nên chạy promo ở đâu, khi nào, cho cửa hàng nào, mặt hàng nào.
+2. **Nhóm kỹ thuật / phân tích**
+   - Data Analyst, Data Scientist, BI Engineer hoặc bộ phận IT nội bộ.
+   - Quan tâm tới: cách xử lý dữ liệu, thiết kế feature, lựa chọn mô hình, metric, quy trình tái lập.
+
+Cách kể chuyện được thiết kế sao cho:
+
+- Slide **chính** dùng ngôn ngữ business, trả lời câu hỏi “So what? Giờ phải làm gì?” cho nhóm (1).
+- Các chi tiết **kỹ thuật quan trọng** (pipeline RAW/CLEAN/Embedding, RMSPE, cấu trúc model)  
+  vẫn được trình bày đủ rõ để nhóm (2) thấy logic, và có thể được đào sâu thêm trong phần hỏi–đáp hoặc phụ lục.
+
 
 ### 1.2. Họ cần biết / làm gì? (What)
 
