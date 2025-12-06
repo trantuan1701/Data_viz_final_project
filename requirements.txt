@@ -6,6 +6,8 @@ xgboost>=2.0
 matplotlib>=3.7
 seaborn>=0.13
 
+statsmodels
+
 # PyTorch – dùng cho Entity Embeddings (CPU build mặc định).
 # Nếu muốn GPU, cài lại theo hướng dẫn trên pytorch.org cho đúng bản CUDA.
 torch>=2.2
