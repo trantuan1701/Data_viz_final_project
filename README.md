@@ -73,46 +73,45 @@ Trong project này, chúng mình chủ yếu sử dụng `train.csv` và `store.
 │  └─ train.csv
 │
 ├─ data_preparation/         # Code Python phục vụ chuẩn bị dữ liệu & mô hình
-│  ├─ __init__.py
-│  ├─ processors.py          # Các class FeatureGenerator (RAW, CLEAN, EntityEmbedding, ...)
+│  ├─ __pycache__/
+│  ├─ checkpoints/           # Nơi lưu checkpoint .pth cho Entity Embeddings
 │  ├─ evaluator.py           # RossmannComparer: train/eval XGBoost, plot learning curve, lưu prediction
 │  ├─ models.py              # Định nghĩa EntityEmbeddingModel và các model PyTorch liên quan
-│  └─ checkpoints/           # Nơi lưu checkpoint .pth cho Entity Embeddings
+│  └─ processors.py          # Các class FeatureGenerator (RAW, CLEAN, EntityEmbedding, ...)
 │
 ├─ docs/                     # Tài liệu mô tả dự án (Markdown)
 │  ├─ data_dictionary.md     # Miêu tả ý nghĩa các cột trong train/store
 │  ├─ project_overview.md    # Mô tả ngắn gọn bài toán, phạm vi, giả định
 │  └─ storytelling_design.md # Outline, flow và key message cho phần Data Storytelling (slide/PDF)
 │
-├─ notebooks/                # Jupyter notebooks theo từng "chương" phân tích
-│  ├─ 01.Understand_EDA.ipynb
-│  │    # Chương 1 – Khám phá dữ liệu: phân phối Sales, khách, holiday, open/close, ...
-│  ├─ 02.Sales_seasonality_analysis.ipynb
-│  │    # Phân tích mùa vụ: theo ngày trong tuần, tháng, năm, holiday vs non-holiday
-│  ├─ 03.competitor analysis.ipynb
-│  │    # Phân tích cạnh tranh: CompetitionDistance, thời điểm đối thủ xuất hiện, ...
-│  ├─ 04.PROMO_.ipynb
-│  │    # Phân tích Promo & Promo2: hành vi khi có/không có khuyến mãi, hiệu ứng theo thời gian
-│  └─ 05.Data_Preparation.ipynb
-│       # Notebook chính cho Chương 2:
-│       # - Định nghĩa pipeline RAW / Business Logic Features / Entity Embeddings
-│       # - Train XGBoost với tham số cố định
-│       # - So sánh RMSPE, vẽ Actual vs Predicted, phân tích không gian embedding
-│
 ├─ figures/                  # Hình minh họa chính (biểu đồ đưa vào slide/README)
 │  └─ rmspe_dataprep.png     # Hình so sánh RMSPE 3 mức độ Data Preparation
 │
+├─ notebooks/                # Jupyter notebooks theo từng "chương" phân tích
+│  ├─ 01.Understand_EDA.ipynb
+│  ├─ 02.Sales_seasonality_analysis.ipynb
+│  ├─ 03.competitor analysis.ipynb
+│  ├─ 04.PROMO_.ipynb
+│  └─ 05.Data_Preparation.ipynb
+│
+├─ report_and_slides/        # Sản phẩm cuối cùng nộp môn học
+│  ├─ [Group5 - DSEB 65B] Rossman-Storesales-report.pdf      # Report chính (PDF)
+│  └─ [Group5 - DSEB 65B] Rossmann Store Sales Slide.pdf     # Slide thuyết trình (PDF)
+│
 ├─ reports/
-│  └─ tmp/
+│  └─ tmp/                   # Notebook thử nghiệm, bản nháp phân tích
 │     ├─ Dataprep_comparation.ipynb
-│     │    # Notebook thử nghiệm cho phần so sánh pipeline & phân tích embedding (bản nháp)
 │     └─ Model_comparation.ipynb
-│          # Notebook thử nghiệm cho phần vẽ biểu đồ RMSPE/learning curve (bản nháp)
 │
 ├─ .gitignore                # Bỏ qua các file không cần track (checkpoints, output tạm, v.v.)
 ├─ README.md                 # File mô tả dự án (chính là file bạn đang đọc)
 └─ requirements.txt          # Danh sách thư viện Python cần thiết
 ```
+
+* Thư mục `report_and_slides/` chứa bản **report chính** và **slide thuyết trình** cuối cùng:
+
+  * Report: [Group5 - DSEB 65B Rossman-Storesales-report](report_and_slides/%5BGroup5%20-%20DSEB%2065B%5D%20Rossman-Storesales-report.pdf)
+  * Slide: [Group5 - DSEB 65B Rossmann Store Sales Slide](report_and_slides/%5BGroup5%20-%20DSEB%2065B%5D%20Rossmann%20Store%20Sales%20Slide.pdf)
 
 Nếu muốn hiểu sâu hơn về logic kể chuyện tổng thể (tại sao lại chia thành các chương, thứ tự notebook, key message từng phần), có thể xem thêm **[docs/storytelling_design.md](docs/storytelling_design.md)** song song với việc duyệt qua thư mục `notebooks/`.
 
