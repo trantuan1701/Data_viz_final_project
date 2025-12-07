@@ -77,12 +77,5 @@ Trong phạm vi dự án môn học, **nhóm chỉ sử dụng 2 file**:
 | **Promo2SinceWeek** | `int` (1–52, có thể NA) | **Tuần (ISO calendar week)** trong năm mà cửa hàng **bắt đầu tham gia Promo2**. Chỉ có ý nghĩa khi `Promo2 = 1`. :contentReference[oaicite:20]{index=20} |
 | **Promo2SinceYear** | `int` (có thể NA) | **Năm** cửa hàng bắt đầu tham gia Promo2. Kết hợp với `Promo2SinceWeek` để tính “số tuần đã tham gia Promo2” tại một ngày bất kỳ. :contentReference[oaicite:21]{index=21} |
 | **PromoInterval** | `string` (ví dụ `"Feb,May,Aug,Nov"`, có thể NA) | Mô tả **các đợt kích hoạt lặp lại của Promo2 trong năm** – là tên tháng ngăn cách bằng dấu phẩy. Ví dụ `"Feb,May,Aug,Nov"` nghĩa là mỗi năm cửa hàng chạy Promo2 bắt đầu các tháng **2, 5, 8, 11**. Để dùng trong mô hình, thường tách chuỗi này thành các biến nhị phân theo tháng. :contentReference[oaicite:22]{index=22} |
-
-**Gợi ý sử dụng cho Data Storytelling**
-
-- Minh hoạ **hiệu ứng cạnh tranh**: so sánh phân phối `Sales` theo **nhóm `CompetitionDistance`** (gần, trung bình, xa).
-- Minh hoạ **hiệu ứng chương trình dài hạn**: tạo biến như `is_promo2_active_today` dựa trên `Promo2`, `Promo2SinceYear/Week`, `PromoInterval` rồi so sánh pattern doanh thu trước/sau khi chuẩn hoá biến thời gian này.
-- Nhấn mạnh rằng **`store.csv` bản gốc chưa ghép** với `train.csv` → *“nhờ bước chuẩn bị dữ liệu (merge + feature engineering), chúng tôi biến metadata tĩnh thành feature thời gian giúp cải thiện mô hình”*.
-
 ---
 |

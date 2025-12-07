@@ -4,9 +4,10 @@
 
 *Hình 1 – Cùng một mô hình XGBoost, RMSPE giảm từ **0.1669** (Raw Data) xuống **0.1439** (Business Logic Features) và còn **0.1160** khi dùng Entity Embeddings.*
 
-> **Môn học:** Data Storytelling & Data Preparation  
-> **Mục tiêu:** Dùng bộ dữ liệu Rossmann Store Sales (Kaggle) để chứng minh vai trò của  
+> **Môn học:** Data Storytelling & Data Preparation
+> **Mục tiêu:** Dùng bộ dữ liệu Rossmann Store Sales (Kaggle) để chứng minh vai trò của
 > **Data Preparation** trong việc xây dựng mô hình dự báo doanh thu cho chuỗi bán lẻ.
+
 ---
 
 ## 1. Bối cảnh & Mục tiêu
@@ -31,6 +32,11 @@ Trong project này, chúng mình:
    > *Cùng một mô hình, cùng một bài toán – nhưng cách chuẩn bị dữ liệu khác nhau
    > có thể tạo ra chất lượng dự báo hoàn toàn khác nhau.*
 
+Để xem mô tả ngắn gọn bài toán, phạm vi và giả định, có thể tham khảo thêm
+**[docs/project_overview.md](docs/project_overview.md)**.
+Phần thiết kế câu chuyện, flow và key message được mô tả chi tiết trong
+**[docs/storytelling_design.md](docs/storytelling_design.md)**.
+
 ---
 
 ## 2. Bộ dữ liệu
@@ -50,6 +56,9 @@ Trong project này, chúng mình chủ yếu sử dụng `train.csv` và `store.
 * Khảo sát dữ liệu,
 * Xây các pipeline Feature Engineering,
 * Và huấn luyện / so sánh mô hình.
+
+> Giải thích chi tiết ý nghĩa từng cột (cả trong `train.csv` và `store.csv`) được tổng hợp
+> trong file **[docs/data_dictionary.md](docs/data_dictionary.md)**.
 
 ---
 
@@ -90,10 +99,9 @@ Trong project này, chúng mình chủ yếu sử dụng `train.csv` và `store.
 │       # - Train XGBoost với tham số cố định
 │       # - So sánh RMSPE, vẽ Actual vs Predicted, phân tích không gian embedding
 │
-|
-├─ figures/            # Hình minh họa chính (biểu đồ đưa vào slide/README)
-|
-|
+├─ figures/                  # Hình minh họa chính (biểu đồ đưa vào slide/README)
+│  └─ rmspe_dataprep.png     # Hình so sánh RMSPE 3 mức độ Data Preparation
+│
 ├─ reports/
 │  └─ tmp/
 │     ├─ Dataprep_comparation.ipynb
@@ -105,6 +113,8 @@ Trong project này, chúng mình chủ yếu sử dụng `train.csv` và `store.
 ├─ README.md                 # File mô tả dự án (chính là file bạn đang đọc)
 └─ requirements.txt          # Danh sách thư viện Python cần thiết
 ```
+
+Nếu muốn hiểu sâu hơn về logic kể chuyện tổng thể (tại sao lại chia thành các chương, thứ tự notebook, key message từng phần), có thể xem thêm **[docs/storytelling_design.md](docs/storytelling_design.md)** song song với việc duyệt qua thư mục `notebooks/`.
 
 ---
 
@@ -136,6 +146,9 @@ pip install -r requirements.txt
 2. Đặt các file `train.csv`, `test.csv`, `store.csv`, `sample_submission.csv` vào thư mục `data/`.
 3. Không cần đổi tên cột hay chỉnh sửa dữ liệu gốc.
 
+Trong quá trình làm việc, nếu cần tra cứu nhanh ý nghĩa cột, có thể mở
+**[docs/data_dictionary.md](docs/data_dictionary.md)** thay vì phải quay lại Kaggle.
+
 ### 4.4. Chạy các notebook
 
 Thứ tự khuyến nghị:
@@ -160,6 +173,9 @@ Thứ tự khuyến nghị:
    * So sánh RMSPE, vẽ learning curves.
    * Vẽ Actual vs Predicted theo từng cửa hàng.
    * Phân tích không gian embedding (PCA, phân phối PC, khoảng cách embedding vs khoảng cách doanh thu).
+
+> Phần “khung lý thuyết” cho storytelling (cách dùng biểu đồ, cách nhấn thông điệp) được trình bày trong
+> **[docs/storytelling_design.md](docs/storytelling_design.md)**, có thể đọc song song khi thiết kế slide/báo cáo.
 
 Trong quá trình chạy notebook, các module trong `data_preparation/` được import như một package nội bộ của project.
 
